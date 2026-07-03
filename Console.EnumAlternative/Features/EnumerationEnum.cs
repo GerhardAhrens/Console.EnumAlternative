@@ -2,17 +2,18 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.CompilerServices;
 
-    public abstract class EnumerationEnum<T> : IEquatable<T>, IComparable<T> where T : EnumerationEnum<T>
+    public abstract class EnumerationEnumBase<T> : IEquatable<T>, IComparable<T> where T : EnumerationEnumBase<T>
     {
         private static readonly Lazy<Dictionary<int, T>> _byValue = new(CreateByValue, LazyThreadSafetyMode.ExecutionAndPublication);
 
         private static readonly Lazy<Dictionary<string, T>> _byName = new(CreateByName, LazyThreadSafetyMode.ExecutionAndPublication);
 
-        protected EnumerationEnum(int value, string name)
+        protected EnumerationEnumBase(int value, string name)
         {
             Value = value;
             Name = name;
@@ -82,18 +83,31 @@
 
         public override int GetHashCode() => Value;
 
-        public override bool Equals(object obj)  => obj is T other && Equals(other);
+        public override bool Equals(object obj) => obj is T other && Equals(other);
 
         public bool Equals(T other) => other is not null && Value == other.Value;
 
         public int CompareTo(T other) => Value.CompareTo(other?.Value ?? -1);
 
-        public static bool operator ==(EnumerationEnum<T> left, EnumerationEnum<T> right) => Equals(left, right);
+        public static bool operator ==(EnumerationEnumBase<T> left, EnumerationEnumBase<T> right) => Equals(left, right);
 
-        public static bool operator !=(EnumerationEnum<T> left, EnumerationEnum<T> right) => !Equals(left, right);
+        public static bool operator !=(EnumerationEnumBase<T> left, EnumerationEnumBase<T> right) => !Equals(left, right);
 
-        public static implicit operator int(EnumerationEnum<T> value) => value.Value;
+        public static implicit operator int(EnumerationEnumBase<T> value) => value.Value;
 
-        public static implicit operator string(EnumerationEnum<T> value) => value.Name;
+        public static implicit operator string(EnumerationEnumBase<T> value) => value.Name;
+    }
+
+    public static class EnumerationEnumExtensions
+    {
+        public static bool In<T>(this T value, params T[] values) where T : EnumerationEnumBase<T>
+        {
+            return values.Contains(value);
+        }
+
+        public static bool NotIn<T>(this T value, params T[] values) where T : EnumerationEnumBase<T>
+        {
+            return values.Contains(value) == false;
+        }
     }
 }

@@ -60,12 +60,26 @@ namespace Console.EnumAlternative
                 Console.Success(button.Value);
             }
 
+            if (button.In(Buttons.Adressen,Buttons.Rechnungen) == true)
+            {
+                Console.Title("In()");
+                Console.Success(button.Name);
+                Console.Success(button.Value);
+            }
+
+            if (button.NotIn(Buttons.Adressen, Buttons.Rechnungen) == true)
+            {
+                Console.Title("NotIn()");
+                Console.Success(button.Name);
+                Console.Success(button.Value);
+            }
+
             Console.WriteText("Wert oder Name zurückgeben");
 
             var bv = Buttons.FromValue(2);
             Console.Success(bv.Name);
 
-            var bn = Buttons.FromName("Rechnungen");
+            var bn = Buttons.FromName("RechnungenX");
             Console.Success(bn.Value);
 
             Console.WriteText("Metadaten");
@@ -81,7 +95,7 @@ namespace Console.EnumAlternative
         }
     }
 
-    public sealed partial class Buttons : EnumerationEnum<Buttons>
+    public sealed partial class Buttons : EnumerationEnumBase<Buttons>
     {
         private Buttons(int value, string name) : base(value, name) {}
     }

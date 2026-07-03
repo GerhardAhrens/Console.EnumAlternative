@@ -70,6 +70,7 @@ public static class AdressMenu
 }
 ```
 
+Das ganze l‰ﬂt sich weiterentwicklen, z.B. mit einer Basisklasse, die die weitere Funktionalit‰ten bereitstellt.
 ```csharp
 ```
 
@@ -87,4 +88,4 @@ public static class AdressMenu
 
 # Versionshistorie
 ![Version](https://img.shields.io/badge/Version-1.0.2026.0-yellow.svg)
-- Migration auf NET 10
+- Erste Version
