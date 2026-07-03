@@ -71,19 +71,96 @@ public static class AdressMenu
 ```
 
 Das ganze läßt sich weiterentwicklen, z.B. mit einer Basisklasse, die die weitere Funktionalitäten bereitstellt.
-```csharp
-```
 
 ```csharp
+public abstract class EnumerationEnumBase<T> : IEquatable<T>, IComparable<T> where T : EnumerationEnumBase<T>
+{
+}
 ```
+
+Beispiele 
+
+Initalisieren eines SmartEnum `Buttons`. Die Klasse stellt den Typ `Buttons` bereit, der die Funktionalitäten von Enums bereitstellt. Die Einträge können in verschiedenen Dateien oder Assemblies liegen.
+```csharp
+public sealed partial class Buttons : EnumerationEnumBase<Buttons>
+{
+    private Buttons(int value, string name) : base(value, name) {}
+}
+```
+
+Erstellen der jeweiligen Einträge in entweder einer C# Klasse oder in einer anderen Datei. Die Einträge können auch in verschiedenen Assemblies liegen.
 
 ```csharp
+public sealed partial class Buttons
+{
+    [Category("Hauptmenü")]
+    [Description("Personen verwalten")]
+    public static readonly Buttons Personen = new(1, nameof(Personen));
+}
+
+public sealed partial class Buttons
+{
+    [Category("Hauptmenü")]
+    [Description("Adressen verwalten")]
+    public static readonly Buttons Adressen = new(2, nameof(Adressen));
+}
+
+public sealed partial class Buttons
+{
+    [Category("Hauptmenü")]
+    [Description("Rechnungen verwalten")]
+    public static readonly Buttons Rechnungen = new(3, nameof(Rechnungen));
+}
 ```
 
-```xml
-```
+Hier werden die verschidenen Möglichkeiten gezeigt:
+- zuweisen
+- vergleichen
+- den Namen von einerm Wert zurückgen
+- den Wert eine von einem Namen zurückgeben
+- Wird ein Wert oder ein Name nicht gefunden, wird eine Exception geworfen.
 
-```json
+```csharp
+Buttons button = Buttons.Personen;
+
+if (button == Buttons.Personen)
+{
+    Console.Success(Buttons.Personen.Category());
+    Console.Success(Buttons.Personen.Description());
+    Console.Success(button.Name);
+    Console.Success(button.Value);
+}
+
+if (button.In(Buttons.Adressen,Buttons.Rechnungen) == true)
+{
+    Console.Title("In()");
+    Console.Success(button.Name);
+    Console.Success(button.Value);
+}
+
+if (button.NotIn(Buttons.Adressen, Buttons.Rechnungen) == true)
+{
+    Console.Title("NotIn()");
+    Console.Success(button.Name);
+    Console.Success(button.Value);
+}
+
+Console.WriteText("Wert oder Name zurückgeben");
+
+var bv = Buttons.FromValue(2);
+Console.Success(bv.Name);
+
+var bn = Buttons.FromName("Rechnungen");
+Console.Success(bn.Value);
+
+Console.WriteText("Metadaten");
+
+foreach (var buttons in Buttons.GetValues())
+{
+    Console.WriteLine($"{buttons.Value} - {buttons.Name}");
+}
+
+Console.WriteLine($"Anzahl : {Buttons.Count}");
 ```
 
 # Versionshistorie

@@ -20,6 +20,7 @@ namespace Console.EnumAlternative
 {
     /* Imports from NET Framework */
     using System;
+    using System.ComponentModel;
 
     using Console.EnumAlternative.Features;
 
@@ -50,12 +51,14 @@ namespace Console.EnumAlternative
         {
             Console.Clear();
 
-            Console.Title("Zuweisen / Vergelichen");
+            Console.Title("Zuweisen / Vergleichen");
 
             Buttons button = Buttons.Personen;
 
             if (button == Buttons.Personen)
             {
+                Console.Success(Buttons.Personen.Category());
+                Console.Success(Buttons.Personen.Description());
                 Console.Success(button.Name);
                 Console.Success(button.Value);
             }
@@ -79,7 +82,7 @@ namespace Console.EnumAlternative
             var bv = Buttons.FromValue(2);
             Console.Success(bv.Name);
 
-            var bn = Buttons.FromName("RechnungenX");
+            var bn = Buttons.FromName("Rechnungen");
             Console.Success(bn.Value);
 
             Console.WriteText("Metadaten");
@@ -102,16 +105,22 @@ namespace Console.EnumAlternative
 
     public sealed partial class Buttons
     {
+        [Category("Hauptmenü")]
+        [Description("Personen verwalten")]
         public static readonly Buttons Personen = new(1, nameof(Personen));
     }
 
     public sealed partial class Buttons
     {
+        [Category("Hauptmenü")]
+        [Description("Adressen verwalten")]
         public static readonly Buttons Adressen = new(2, nameof(Adressen));
     }
 
     public sealed partial class Buttons
     {
+        [Category("Hauptmenü")]
+        [Description("Rechnungen verwalten")]
         public static readonly Buttons Rechnungen = new(3, nameof(Rechnungen));
     }
 }

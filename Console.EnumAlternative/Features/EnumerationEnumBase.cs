@@ -2,15 +2,16 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.CompilerServices;
+    using System.Runtime.InteropServices.Swift;
 
     public abstract class EnumerationEnumBase<T> : IEquatable<T>, IComparable<T> where T : EnumerationEnumBase<T>
     {
         private static readonly Lazy<Dictionary<int, T>> _byValue = new(CreateByValue, LazyThreadSafetyMode.ExecutionAndPublication);
-
         private static readonly Lazy<Dictionary<string, T>> _byName = new(CreateByName, LazyThreadSafetyMode.ExecutionAndPublication);
 
         protected EnumerationEnumBase(int value, string name)
@@ -71,9 +72,9 @@
 
         public static IReadOnlyCollection<T> GetValues() => _byValue.Value.Values.ToList().AsReadOnly();
 
-        public static T FromValue(int value) => _byValue.Value[value];
+        public static T FromValue(int value) => _byValue.Value.Any(a => a.Key == value) ? _byValue.Value[value] : default(T);
 
-        public static T FromName(string name) => _byName.Value[name];
+        public static T FromName(string name) => _byName.Value.Any(a => a.Key == name) ? _byName.Value[name] : default(T);
 
         public static bool TryFromValue(int value, out T result) => _byValue.Value.TryGetValue(value, out result!);
 
@@ -93,6 +94,11 @@
 
         public static bool operator !=(EnumerationEnumBase<T> left, EnumerationEnumBase<T> right) => !Equals(left, right);
 
+        public static bool operator > (EnumerationEnumBase<T> left, EnumerationEnumBase<T> right) => true;
+        public static bool operator >=(EnumerationEnumBase<T> left, EnumerationEnumBase<T> right) => true;
+        public static bool operator <(EnumerationEnumBase<T> left, EnumerationEnumBase<T> right) => true;
+        public static bool operator <=(EnumerationEnumBase<T> left, EnumerationEnumBase<T> right) => true;
+
         public static implicit operator int(EnumerationEnumBase<T> value) => value.Value;
 
         public static implicit operator string(EnumerationEnumBase<T> value) => value.Name;
@@ -108,6 +114,51 @@
         public static bool NotIn<T>(this T value, params T[] values) where T : EnumerationEnumBase<T>
         {
             return values.Contains(value) == false;
+        }
+
+        public static string Description<T>(this T value) where T : EnumerationEnumBase<T>
+        {
+            // if this is a Flags enum, value may contain multiple items
+            var values = value.ToString().Split(',').Select(s => s.Trim()).ToList();
+            var enumType = value.GetType();
+
+            var result = string.Join(" | ", values.Select(enumValue => enumType.GetMember(enumValue)
+                                                                           .FirstOrDefault()
+                                                                           ?.GetCustomAttribute<DescriptionAttribute>()
+                                                                           ?.Description
+                                                                       ?? enumValue.ToString()));
+
+            return result;
+        }
+
+        public static string Category<T>(this T value) where T : EnumerationEnumBase<T>
+        {
+            // if this is a Flags enum, value may contain multiple items
+            var values = value.ToString().Split(',').Select(s => s.Trim()).ToList();
+            var enumType = value.GetType();
+
+            var result = string.Join(" | ", values.Select(enumValue => enumType.GetMember(enumValue)
+                                                                           .FirstOrDefault()
+                                                                           ?.GetCustomAttribute<CategoryAttribute>()
+                                                                           ?.Category
+                                                                       ?? enumValue.ToString()));
+
+            return result;
+        }
+
+        public static string DisplayName<T>(this T value) where T : EnumerationEnumBase<T>
+        {
+            // if this is a Flags enum, value may contain multiple items
+            var values = value.ToString().Split(',').Select(s => s.Trim()).ToList();
+            var enumType = value.GetType();
+
+            var result = string.Join(" | ", values.Select(enumValue => enumType.GetMember(enumValue)
+                                                                           .FirstOrDefault()
+                                                                           ?.GetCustomAttribute<DisplayNameAttribute>()
+                                                                           ?.DisplayName
+                                                                       ?? enumValue.ToString()));
+
+            return result;
         }
     }
 }
