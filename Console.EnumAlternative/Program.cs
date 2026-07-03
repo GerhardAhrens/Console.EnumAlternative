@@ -63,6 +63,7 @@ namespace Console.EnumAlternative
                 Console.Success(button.Value);
             }
 
+            Console.WriteLine();
             if (button.In(Buttons.Adressen,Buttons.Rechnungen) == true)
             {
                 Console.Title("In()");
@@ -70,6 +71,7 @@ namespace Console.EnumAlternative
                 Console.Success(button.Value);
             }
 
+            Console.WriteLine();
             if (button.NotIn(Buttons.Adressen, Buttons.Rechnungen) == true)
             {
                 Console.Title("NotIn()");
@@ -77,6 +79,7 @@ namespace Console.EnumAlternative
                 Console.Success(button.Value);
             }
 
+            Console.WriteLine();
             Console.WriteText("Wert oder Name zurückgeben");
 
             if (Buttons.HasVaule(2) == true)
@@ -84,17 +87,24 @@ namespace Console.EnumAlternative
                 Console.Success("Wert 2 vorhanden");
             }
 
+            if (Buttons.HasVaule("Rechnungen") == true)
+            {
+                Console.Success("Value 'Rechnungen' vorhanden");
+            }
+
             if (Buttons.HasVaule(9) == false)
             {
                 Console.Success("Wert 9 nicht vorhanden");
             }
 
+            Console.WriteLine();
             var bv = Buttons.FromValue(2);
             Console.Success(bv.Name);
 
             var bn = Buttons.FromName("Rechnungen");
             Console.Success(bn.Value);
 
+            Console.WriteLine();
             Console.WriteText("Metadaten");
 
             foreach (var buttons in Buttons.GetValues())
