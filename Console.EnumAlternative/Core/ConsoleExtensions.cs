@@ -91,6 +91,26 @@ namespace System
                 Console.ResetColor();
             }
 
+            public static void Header(string text, int width = 80, char lineChar = '=')
+            {
+                width = Math.Min(width, Console.WindowWidth);
+
+                string title = $" {text} ";
+
+                // Falls der Titel länger als die gewünschte Breite ist
+                if (title.Length >= width)
+                {
+                    Console.WriteLine(title);
+                    return;
+                }
+
+                int remaining = width - title.Length;
+                int left = remaining / 2;
+                int right = remaining - left;
+
+                Console.WriteLine(new string(lineChar, left) + title + new string(lineChar, right));
+            }
+
             public static void WriteSuccess(string text)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -131,13 +151,26 @@ namespace System
                 Console.WriteLine(new string('-', Console.WindowWidth));
             }
 
-            public static bool AskYesNo(string frage)
+
+            public static bool AskYesNo(string frage, bool? defaultValue = null)
             {
                 while (true)
                 {
-                    Console.Write($"{frage} (j/n): ");
+                    string suffix = defaultValue switch
+                    {
+                        true => "(J/n)",
+                        false => "(j/N)",
+                        null => "(j/n)"
+                    };
+
+                    Console.Write($"{frage} {suffix}: ");
 
                     string eingabe = Console.ReadLine()?.Trim().ToLower(CultureInfo.CurrentCulture);
+
+                    if (string.IsNullOrEmpty(eingabe) && defaultValue.HasValue)
+                    {
+                        return defaultValue.Value;
+                    }
 
                     switch (eingabe)
                     {
@@ -151,13 +184,11 @@ namespace System
                         case "nein":
                         case "no":
                             return false;
-
-                        default:
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Bitte 'j' oder 'n' eingeben.");
-                            Console.ResetColor();
-                            break;
                     }
+
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Bitte 'j' oder 'n' eingeben.");
+                    Console.ResetColor();
                 }
             }
 

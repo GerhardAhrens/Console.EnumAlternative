@@ -79,6 +79,16 @@ namespace Console.EnumAlternative
 
             Console.WriteText("Wert oder Name zurückgeben");
 
+            if (Buttons.HasVaule(2) == true)
+            {
+                Console.Success("Wert 2 vorhanden");
+            }
+
+            if (Buttons.HasVaule(9) == false)
+            {
+                Console.Success("Wert 9 nicht vorhanden");
+            }
+
             var bv = Buttons.FromValue(2);
             Console.Success(bv.Name);
 

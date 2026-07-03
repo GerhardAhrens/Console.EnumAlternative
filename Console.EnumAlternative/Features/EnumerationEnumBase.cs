@@ -52,10 +52,7 @@
             RuntimeHelpers.RunClassConstructor(typeof(T).TypeHandle);
 
             var fields = typeof(T)
-                .GetFields(BindingFlags.Public |
-                           BindingFlags.Static |
-                           BindingFlags.DeclaredOnly)
-                .Where(f => f.FieldType == typeof(T));
+                .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).Where(f => f.FieldType == typeof(T));
 
             var list = new List<T>();
 
@@ -72,9 +69,25 @@
 
         public static IReadOnlyCollection<T> GetValues() => _byValue.Value.Values.ToList().AsReadOnly();
 
+        public static bool HasVaule(object value)
+        {
+            bool result = false;
+
+            if (value is int)
+            {
+                result = _byValue.Value.Any(a => a.Key == (int)value);
+            }
+            else if (value is string)
+            {
+                result = _byName.Value.Any(a => a.Value == value.ToString());
+            }
+
+            return result;
+        }
+
         public static T FromValue(int value) => _byValue.Value.Any(a => a.Key == value) ? _byValue.Value[value] : default(T);
 
-        public static T FromName(string name) => _byName.Value.Any(a => a.Key == name) ? _byName.Value[name] : default(T);
+        public static T FromName(string name) => _byName.Value.Any(a => a.Value == name) ? _byName.Value[name] : default(T);
 
         public static bool TryFromValue(int value, out T result) => _byValue.Value.TryGetValue(value, out result!);
 
